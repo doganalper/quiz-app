@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Answer {
+  id         String   @id
+  text       String
+  isCorrectAnswer Boolean
+
+  Question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+}
+
+model Question {
+  id              String   @id
+  question        String
+  quizId          String
+  Answer          Answer[]
+  Quiz            Quiz     @relation(fields: [quizId], references: [id])
+}
+
+model Quiz {
+  id        String     @id
+  title     String
+  createdAt DateTime   @default(now())
+  expiresAt DateTime   @default(dbgenerated("(now() + '1 day'::interval)"))
+  Question  Question[]
+  QuizUser  QuizUser[]
+}
+
+model QuizUser {
+  id     String @id
+  name   String
+  score  Int    @default(0)
+  quizId String
+  Quiz   Quiz   @relation(fields: [quizId], references: [id])
+}
