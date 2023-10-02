@@ -1,4 +1,4 @@
-import CreateForm from "@/app/create/createQuizForm/index";
+import CreateForm from "@/components/quizForm/index";
 
 export default function Create() {
 	return <CreateForm />;

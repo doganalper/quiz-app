@@ -3,9 +3,9 @@
 import type { Question, Quiz } from "@prisma/client";
 import React from "react";
 
-import ExpiresAt from "@/app/create/createQuizForm/expiresAt";
-import QuizName from "@/app/create/createQuizForm/quizName";
-import AddQuestion from "@/app/create/createQuizForm/addQuestion";
+import ExpiresAt from "@/components/quizForm/expiresAt";
+import QuizName from "@/components/quizForm/quizName";
+import AddQuestion from "@/components/quizForm/addQuestion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -38,7 +38,7 @@ function CreateForm({}: Props) {
 		});
 	}
 
-	function changeSreen(): void {
+	function changeScreen(): void {
 		setScreenIdx((prev) => {
 			const nextVal = prev + 1;
 			if (nextVal === 2) {
@@ -51,7 +51,7 @@ function CreateForm({}: Props) {
 	let formComponent = (
 		<QuizName
 			onChange={(val) => changeFormData("title", val)}
-			onEnterPress={changeSreen}
+			onEnterPress={changeScreen}
 		/>
 	);
 
@@ -69,10 +69,10 @@ function CreateForm({}: Props) {
 	}
 
 	return (
-		<div className="flex flex-col space-y-6 w-[380px]">
+		<div className="flex flex-col space-y-3 w-[380px]">
 			{formComponent}
 			{showNextButton && (
-				<Button disabled={!isNextButtonActive} onClick={changeSreen}>
+				<Button disabled={!isNextButtonActive} onClick={changeScreen}>
 					Next
 				</Button>
 			)}

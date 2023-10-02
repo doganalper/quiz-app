@@ -4,25 +4,39 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { FormQuestion } from "@/app/create/createQuizForm/addQuestion";
+import { FormQuestion } from "@/components/quizForm/addQuestion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import React from "react";
-import AddAnswer from "@/app/create/createQuizForm/addAnswerForm";
-import AnswerListItem from "@/app/create/createQuizForm/answerListItem";
+import AddAnswer from "@/components/quizForm/addAnswerForm";
+import AnswerListItem from "@/components/quizForm/answerListItem";
 
 type AddAnswerState = "closed" | "open";
+export type QuestionFormMethod = "add" | "edit"
 
 type Props = {
 	open: boolean;
 	onOpenChange: (val: boolean) => void;
-	onQuestionAdd: (val: FormQuestion) => void;
+	onQuestionFormSubmit: (method: QuestionFormMethod, val: FormQuestion) => void;
+	editQuestion: FormQuestion | null;
 };
-function AddQuestionDialog({ open, onOpenChange }: Props) {
-	const [question, setQuestion] = React.useState<FormQuestion | null>();
+function AddQuestionDialog({
+	open,
+	onOpenChange,
+	onQuestionFormSubmit,
+	editQuestion,
+}: Props) {
+	const [question, setQuestion] = React.useState<FormQuestion>();
 	const [showAddAnswerSection, setShowAddAnswerSection] =
 		React.useState<AddAnswerState>("closed");
+	const [isCreateBtnDisabled, setIsCreateBtnDisabled] = React.useState(true);
+
+	React.useEffect(() => {
+		if (editQuestion) {
+			setQuestion(editQuestion);
+		}
+	}, [editQuestion]);
 
 	function changeFormData(key: keyof FormQuestion, value: any) {
 		setQuestion((prev) => {
@@ -41,13 +55,13 @@ function AddQuestionDialog({ open, onOpenChange }: Props) {
 				prev[key] = value;
 			}
 
-			console.log("[question prev]:", prev);
+			checkQuestionDisablity(prev);
 
 			return prev;
 		});
 	}
 
-	function onDeleteHandler(idx: number): void {
+	async function onDeleteHandler(idx: number): Promise<void> {
 		if (!question || !question?.answers || question.answers.length === 0)
 			return;
 
@@ -59,20 +73,46 @@ function AddQuestionDialog({ open, onOpenChange }: Props) {
 					...prev,
 					answers: copiedAnswers,
 				};
+
+				checkQuestionDisablity(prev);
 				return prev;
 			}
 		});
+	}
+
+	function checkQuestionDisablity(question: FormQuestion) {
+		let isValid = false;
+		if (!question) {
+			isValid = true;
+		}
+
+		if (question && !!question.question) {
+			isValid = true;
+		}
+
+		if ((question?.answers || []).length !== 0) {
+			isValid = false;
+		}
+
+		if (question?.question === "" || question?.question.trim() === "") {
+			isValid = true;
+		}
+
+		setIsCreateBtnDisabled(isValid);
 	}
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Create a question</DialogTitle>
+					<DialogTitle>
+						{editQuestion ? "Edit" : "Create a"} question
+					</DialogTitle>
 				</DialogHeader>
 				<div>
 					<Label htmlFor="question">Your question</Label>
 					<Input
+						defaultValue={question?.question}
 						name="question"
 						onChange={(e) => changeFormData("question", e.target.value)}
 					/>
@@ -96,14 +136,25 @@ function AddQuestionDialog({ open, onOpenChange }: Props) {
 						onAnswerAdd={(answer) => changeFormData("answers", answer)}
 					/>
 				)}
-				<Button
-					onClick={() => setShowAddAnswerSection("open")}
-					className="w-full sm:w-1/3"
-					disabled={showAddAnswerSection === "open"}
-					variant="outline"
-				>
-					Add New Answer
-				</Button>
+				<div className="flex flex-col sm:flex-row justify-between">
+					<Button
+						onClick={() => setShowAddAnswerSection("open")}
+						className="w-full sm:w-1/3"
+						disabled={showAddAnswerSection === "open"}
+						variant="outline"
+					>
+						Add New Answer
+					</Button>
+					<Button
+						onClick={() =>
+							onQuestionFormSubmit(editQuestion ? "edit" : "add", question!)
+						}
+						className="w-full sm:w-1/3"
+						disabled={isCreateBtnDisabled}
+					>
+						{editQuestion ? "Edit" : "Create"}
+					</Button>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);

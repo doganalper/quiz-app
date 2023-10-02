@@ -15,9 +15,7 @@ type Props = {
 };
 function ExpiresAt({ onChange }: Props) {
 	const [popoverOpen, setPopoverOpen] = React.useState(false);
-	const [pickedValue, setPickedValue] = React.useState<Date>(
-		new Date(),
-	);
+	const [pickedValue, setPickedValue] = React.useState<Date>(new Date());
 
 	React.useEffect(() => {
 		setPopoverOpen(false);
@@ -34,7 +32,7 @@ function ExpiresAt({ onChange }: Props) {
 					<Button
 						variant={"outline"}
 						className={cn(
-							"w-[240px] pl-3 text-left font-normal",
+							"w-[280px] pl-3 text-left font-normal",
 							!pickedValue && "text-muted-foreground",
 						)}
 						onClick={() => setPopoverOpen(true)}
@@ -43,7 +41,7 @@ function ExpiresAt({ onChange }: Props) {
 						<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent className="w-auto p-0" align="start">
+				<PopoverContent className="w-auto p-0" align="center">
 					<Calendar
 						mode="single"
 						onSelect={(value) => setPickedValue(value!)}

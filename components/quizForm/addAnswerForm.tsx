@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FormAnswer } from "@/app/create/createQuizForm/addQuestion";
+import { FormAnswer } from "@/components/quizForm/addQuestion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React from "react";
@@ -25,7 +25,7 @@ function AddAnswer({ onAnswerAdd }: Props) {
 	}
 
 	function onBtnClick() {
-		if (!answer) return;
+		if (!answer || !answer.text) return;
 
 		onAnswerAdd(answer);
 	}
